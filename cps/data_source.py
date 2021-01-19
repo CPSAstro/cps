@@ -1,7 +1,11 @@
 # from cps import annulus_class
+import requests
 import logging
+import urllib
 import numpy as np
 import astropy.units as u
+from io import BytesIO
+from astropy.io import fits
 from astropy.wcs import WCS
 from astropy.coordinates import SkyCoord
 from astropy.stats import SigmaClip, sigma_clipped_stats
@@ -170,3 +174,27 @@ class DataSource:
 
         return infos
 
+def get_cube(url: str):
+    urllib.request.urlopen(url)
+    r = requests.get(url)
+    open('test.fits', 'wb').write(r.content)
+                
+    
+def get_spectral(filename: str,vindex:int='3'):
+    file_fits = fits.open(filename)
+    spectral_data = file_fits[0].data
+    line_header=file_fits[0].header
+    vaxis=f'CRVAL{vindex}'
+    pix_axis=f'CDELT{vindex}'
+    averaged_spectrum= np.nanmean(np.nanmean(spectral_data,2),1)
+    velocity_axis_end=line_header[vaxis]+len(averaged_spectrum)*line_header[pix_axis]
+    v_axes =np.linspace(line_header[vaxis],velocity_axis_end,len(averaged_spectrum))
+
+    return averaged_spectrum
+        
+    
+        
+              
+              
+               
+                    

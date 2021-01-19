@@ -1,6 +1,7 @@
+
 import matplotlib.pyplot as plt
 import numpy as np
-from cps.data_source import DataSource
+from cps.data_source import DataSource,get_cube,get_spectral
 from astroquery.skyview import SkyView
 from astropy.coordinates import SkyCoord
 
@@ -32,3 +33,13 @@ def test_masks_and_background():
     ds.images()
     ds.set_mask(inner=15, outer=15*np.sqrt(2), pos=coord, method='annulus')
     print(ds.flux_info())
+
+def test_get_cube():
+    url=('http://jvo.nao.ac.jp/skynode/do/download/nobeyama/coming/coming_meta/CMG00000000')
+    get_cube(url)
+
+def test_get_spectral():
+    spectrum=get_spectral('test/input_test_file/test.fits')
+    print(spectrum)
+    
+    
