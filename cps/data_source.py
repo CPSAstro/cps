@@ -11,6 +11,8 @@ from astropy.coordinates import SkyCoord
 from astropy.stats import SigmaClip, sigma_clipped_stats
 from photutils import SkyCircularAperture, SkyCircularAnnulus, ApertureMask, \
                       aperture_photometry, make_source_mask
+from spectral_cube import SpectralCube
+from matplotlib import pyplot as plt
 
 class DataSource:
     def __init__(self, database: object, *args, list_survey=False, **kwargs) -> None:
@@ -174,23 +176,41 @@ class DataSource:
 
         return infos
 
-def get_cube(url: str):
-    urllib.request.urlopen(url)
-    r = requests.get(url)
-    open('test.fits', 'wb').write(r.content)
+
+class DataSpectral:
+    def __init__(self, url: str, filename: str, vindex:int='3', **kwargs):
+        self.url=url
+        self.vindex=vindex
+        self.filename=filename
+        def get_cube(self):
+            urllib.request.urlopen(self.url)
+            r = requests.get(self.url)
+            open(self.filename, 'wb').write(r.content)
                 
     
-def get_spectral(filename: str,vindex:int='3'):
-    file_fits = fits.open(filename)
-    spectral_data = file_fits[0].data
-    line_header=file_fits[0].header
-    vaxis=f'CRVAL{vindex}'
-    pix_axis=f'CDELT{vindex}'
-    averaged_spectrum= np.nanmean(np.nanmean(spectral_data,2),1)
-    velocity_axis_end=line_header[vaxis]+len(averaged_spectrum)*line_header[pix_axis]
-    v_axes =np.linspace(line_header[vaxis],velocity_axis_end,len(averaged_spectrum))
-
-    return averaged_spectrum
+    def study_spectral(self):
+        name =self.filename
+        moment_0_filename= name+'moment_0.fits'
+        moment_1_filename=name+'moment_1.fits'
+        spec_file=self.filename+'spectrum.jpg'
+        file_fits = fits.open(name)
+        #spectral_data = file_fits[0].data
+        line_header=file_fits[0].header
+        cube = SpectralCube.read(name) 
+        cube_spectrum =cube.mean(axis=(1, 2))
+        moment_0_test = cube.moment(order=0)  
+        moment_1_test = cube.moment(order=1)  
+        moment_0_test.write(moment_0_filename)
+        moment_1_test.write(moment_1_filename)
+        vaxis='CRVAL{'+str(self.vnindex)+'}'
+        pix_axis='CDELT{'+str(self.vnindex)+'}'
+        #averaged_spectrum= np.nanmean(np.nanmean(spectral_data,2),1)
+        velocity_axis_end=line_header[vaxis]+len(cube_spectrum)*line_header[pix_axis]
+        v_axes =np.linspace(line_header[vaxis],velocity_axis_end,len(cube_spectrum))
+        plt.ioff()
+        plt.step(v_axes,cube_spectrum)
+        plt.savefig(spec_file)
+        return cube_spectrum
         
     
         
