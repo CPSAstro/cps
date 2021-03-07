@@ -7,7 +7,7 @@ license = "GPL-3.0-or-later"
 
 [tool.poetry.dependencies]
 python = "^3.6"
-astroquery = "^0.4.1"
+astroquery = "^0.4.2"
 numpy = "^1.19.4"
 scipy = "^1.5.4"
 astropy = "^4.1"
