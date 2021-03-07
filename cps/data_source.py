@@ -13,7 +13,7 @@ from photutils import SkyCircularAperture, SkyCircularAnnulus, ApertureMask, \
                       aperture_photometry, make_source_mask
 from spectral_cube import SpectralCube
 from matplotlib import pyplot as plt
-
+import pathlib
 class DataSource:
     def __init__(self, database: object, *args, list_survey=False, **kwargs) -> None:
         """
@@ -178,21 +178,25 @@ class DataSource:
 
 
 class DataSpectral:
-    def __init__(self, url: str, filename: str, vindex:int='3', **kwargs):
+    def __init__(self, url: str, filename: str, vindex:int='3'):
         self.url=url
         self.vindex=vindex
         self.filename=filename
-    def get_cube(self):
+    def query(self):
         urllib.request.urlopen(self.url)
         r = requests.get(self.url)
-        open(self.filename, 'wb').write(r.content)
+        with open(self.filename, 'wb') as f:
+            f.write(r.content)
                 
     
     def study_spectral(self):
+        test_spectrum = []
+        pathlib.Path().absolute()
+        print(pathlib.Path().absolute())
         name =self.filename
-        moment_0_filename= name+'moment_0.fits'
-        moment_1_filename=name+'moment_1.fits'
-        spec_file=self.filename+'spectrum.jpg'
+        moment_0_filename= name+'_moment_0.fits'
+        moment_1_filename=name+'_moment_1.fits'
+        spec_file=self.filename+'_spectrum.jpg'
         file_fits = fits.open(name)
         #spectral_data = file_fits[0].data
         line_header=file_fits[0].header
@@ -202,15 +206,20 @@ class DataSpectral:
         moment_1_test = cube.moment(order=1)  
         moment_0_test.write(moment_0_filename)
         moment_1_test.write(moment_1_filename)
-        vaxis='CRVAL{'+str(self.vnindex)+'}'
-        pix_axis='CDELT{'+str(self.vnindex)+'}'
+        vaxis='CRVAL'+str(self.vindex)
+        pix_axis='CDELT'+str(self.vindex)
         #averaged_spectrum= np.nanmean(np.nanmean(spectral_data,2),1)
-        velocity_axis_end=line_header[vaxis]+len(cube_spectrum)*line_header[pix_axis]
-        v_axes =np.linspace(line_header[vaxis],velocity_axis_end,len(cube_spectrum))
+        velocity_axis_end=(line_header[vaxis]+len(cube_spectrum)*line_header[pix_axis])/1000
+        v_axes =np.linspace(line_header[vaxis]/1000,velocity_axis_end,len(cube_spectrum))
         plt.ioff()
+        plt.figure()
         plt.step(v_axes,cube_spectrum)
+        plt.xlabel('Velocity [km/s]',fontsize =15)
+        plt.ylabel('Intensity [K]',fontsize=15)
         plt.savefig(spec_file)
-        return cube_spectrum
+        #global test_spectrum
+        test_spectrum = np.append(test_spectrum,np.array(cube_spectrum))
+        return test_spectrum
         
     
         
