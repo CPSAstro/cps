@@ -182,10 +182,10 @@ class DataSpectral:
         self.url=url
         self.vindex=vindex
         self.filename=filename
-        def get_cube(self):
-            urllib.request.urlopen(self.url)
-            r = requests.get(self.url)
-            open(self.filename, 'wb').write(r.content)
+    def get_cube(self):
+        urllib.request.urlopen(self.url)
+        r = requests.get(self.url)
+        open(self.filename, 'wb').write(r.content)
                 
     
     def study_spectral(self):
