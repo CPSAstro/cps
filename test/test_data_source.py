@@ -1,7 +1,8 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
-from cps.data_source import DataSource,get_cube,get_spectral
+from cps.data_source import DataSource,DataSpectral#get_cube,get_spectral
+
 from astroquery.skyview import SkyView
 from astropy.coordinates import SkyCoord
 
@@ -39,7 +40,9 @@ def test_DataSpectral():
     url=('http://jvo.nao.ac.jp/skynode/do/download/nobeyama/coming/coming_meta/CMG00000000')
     filename=('test_new.fits')
     dp= DataSpectral(url, filename)
+    dp.query()
+    line_spectrum=dp.study_spectral()
 #    spectrum=get_spectral('test/input_test_file/test.fits')
-    print(cube_spectrum)
+    print(line_spectrum)
     
     
