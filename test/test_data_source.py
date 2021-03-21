@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from cpsastro.data_source import DataSource, get_cube, get_spectral
+from cps.data_source import DataSource, DataSpectral
+
+
 from astroquery.skyview import SkyView
 from astropy.coordinates import SkyCoord
 
@@ -38,11 +40,11 @@ def test_masks_and_background():
     print(ds.flux_info())
 
 
-def test_get_cube():
+def test_DataSpectral():
     url = "http://jvo.nao.ac.jp/skynode/do/download/nobeyama/coming/coming_meta/CMG00000000"
-    get_cube(url)
-
-
-def test_get_spectral():
-    spectrum = get_spectral("test/input_test_file/test.fits")
-    print(spectrum)
+    filename = "test_new.fits"
+    dp = DataSpectral(url, filename)
+    dp.query()
+    line_spectrum = dp.study_spectral()
+    #    spectrum=get_spectral('test/input_test_file/test.fits')
+    print(line_spectrum)
