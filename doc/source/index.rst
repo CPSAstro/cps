@@ -1,9 +1,9 @@
-.. CPS documentation master file, created by
+.. CPSASTRO documentation master file, created by
    sphinx-quickstart on Mon Oct 12 12:20:23 2020.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to CPS's documentation!
+Welcome to CPSASTRO's documentation!
 ===============================
 
 .. toctree::

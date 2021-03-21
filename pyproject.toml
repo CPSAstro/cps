@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "cps"
+name = "cpsastro"
 version = "0.1.0"
 description = ""
 authors = ["Chia-Jung Hsu <appolloford@gmail.com>"]
@@ -12,7 +12,7 @@ numpy = "^1.19.4"
 scipy = "^1.5.4"
 astropy = "^4.1"
 photutils = "^1.0.1"
-requests = "^2.25.1"
+requests = "^2.24.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.1.2"
