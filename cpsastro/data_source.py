@@ -8,6 +8,7 @@ from astropy.io import fits
 from astropy.wcs import WCS
 from astropy.coordinates import SkyCoord
 from astropy.stats import SigmaClip, sigma_clipped_stats
+from spectral_cube import SpectralCube
 from photutils import (
     SkyCircularAperture,
     SkyCircularAnnulus,
@@ -216,37 +217,31 @@ class DataSpectral:
             f.write(r.content)
 
     def study_spectral(self):
-        test_spectrum = []
-        pathlib.Path().absolute()
-        print(pathlib.Path().absolute())
         name = self.filename
-        moment_0_filename = name + "_moment_0.fits"
-        moment_1_filename = name + "_moment_1.fits"
-        spec_file = self.filename + "_spectrum.jpg"
-        file_fits = fits.open(name)
+        # moment_0_filename = name + "_moment_0.fits"
+        # moment_1_filename = name + "_moment_1.fits"
+        # spec_file = self.filename + "_spectrum.jpg"
+        # file_fits = fits.open(name)
         # spectral_data = file_fits[0].data
-        line_header = file_fits[0].header
+        # line_header = file_fits[0].header
         cube = SpectralCube.read(name)
         cube_spectrum = cube.mean(axis=(1, 2))
-        moment_0_test = cube.moment(order=0)
-        moment_1_test = cube.moment(order=1)
-        moment_0_test.write(moment_0_filename)
-        moment_1_test.write(moment_1_filename)
-        vaxis = "CRVAL" + str(self.vindex)
-        pix_axis = "CDELT" + str(self.vindex)
-        # averaged_spectrum= np.nanmean(np.nanmean(spectral_data,2),1)
-        velocity_axis_end = (
-            line_header[vaxis] + len(cube_spectrum) * line_header[pix_axis]
-        ) / 1000
-        v_axes = np.linspace(
-            line_header[vaxis] / 1000, velocity_axis_end, len(cube_spectrum)
-        )
-        plt.ioff()
-        plt.figure()
-        plt.step(v_axes, cube_spectrum)
-        plt.xlabel("Velocity [km/s]", fontsize=15)
-        plt.ylabel("Intensity [K]", fontsize=15)
-        plt.savefig(spec_file)
-        # global test_spectrum
-        test_spectrum = np.append(test_spectrum, np.array(cube_spectrum))
-        return test_spectrum
+        # moment_0_test = cube.moment(order=0)
+        # moment_1_test = cube.moment(order=1)
+        # moment_0_test.write(moment_0_filename)
+        # moment_1_test.write(moment_1_filename)
+        # vaxis = "CRVAL" + str(self.vindex)
+        # pix_axis = "CDELT" + str(self.vindex)
+        # velocity_axis_end = (
+        #     line_header[vaxis] + len(cube_spectrum) * line_header[pix_axis]
+        # ) / 1000
+        # v_axes = np.linspace(
+        #     line_header[vaxis] / 1000, velocity_axis_end, len(cube_spectrum)
+        # )
+        # plt.ioff()
+        # plt.figure()
+        # plt.step(v_axes, cube_spectrum)
+        # plt.xlabel("Velocity [km/s]", fontsize=15)
+        # plt.ylabel("Intensity [K]", fontsize=15)
+        # plt.savefig(spec_file)
+        return cube_spectrum

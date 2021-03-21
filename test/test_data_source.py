@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from cps.data_source import DataSource, DataSpectral
+from cpsastro.data_source import DataSource, DataSpectral
 
 
 from astroquery.skyview import SkyView
