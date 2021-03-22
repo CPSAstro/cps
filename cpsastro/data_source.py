@@ -1,3 +1,5 @@
+from os import path
+from numpy.core.defchararray import array
 import requests
 import logging
 import urllib
@@ -8,7 +10,6 @@ from astropy.io import fits
 from astropy.wcs import WCS
 from astropy.coordinates import SkyCoord
 from astropy.stats import SigmaClip, sigma_clipped_stats
-from spectral_cube import SpectralCube
 from photutils import (
     SkyCircularAperture,
     SkyCircularAnnulus,
@@ -204,28 +205,66 @@ class DataSource:
         return infos
 
 
-class DataSpectral:
-    def __init__(self, url: str, filename: str, vindex: int = "3"):
-        self.url = url
-        self.vindex = vindex
-        self.filename = filename
+class DataCube:
+    def __init__(self, name: str) -> None:
+        if path.exists(name):
+            self.name = name
+        else:
+            try:
+                response = requests.get(name)
+                self.name = name
+            except requests.ConnectionError as exception:
+                logging.ERROR("Could not find the file or URL")
 
-    def query(self):
-        urllib.request.urlopen(self.url)
-        r = requests.get(self.url)
-        with open(self.filename, "wb") as f:
-            f.write(r.content)
+        self._hdul = None
+        # self.data = None
+        # self.header = None
 
-    def study_spectral(self):
-        name = self.filename
+    @property
+    def data(self):
+        return self.hdul[0].data
+
+    @property
+    def header(self):
+        return self.hdul[0].header
+
+    @property
+    def hdul(self):
+        if self._hdul:
+            return self._hdul
+        else:
+            self.query()
+            return self._hdul
+
+    def query(self) -> object:
+        self._hdul = fits.open(self.name)
+        # self.data = hdul[0].data
+        # self.header = hdul[0].header
+        return
+
+    def save(self, filename: str) -> None:
+        if not path.exist(filename):
+            self.hdul.writeto(filename)
+        else:
+            print("Failed! File exists.")
+
+    @property
+    def spectrum(self):
+        spectrum = np.nanmean(self.data, axis=(1, 2))
+
+        # cube = SpectralCube(data=self.data, wcs=WCS(self.header))
+        # cube_spectrum = cube.mean(axis=(1, 2))
+        return spectrum
+
+        # name = self.filename
+        # cube = SpectralCube.read(self.name)
+        # cube_spectrum = cube.mean(axis=(1, 2))
         # moment_0_filename = name + "_moment_0.fits"
         # moment_1_filename = name + "_moment_1.fits"
         # spec_file = self.filename + "_spectrum.jpg"
         # file_fits = fits.open(name)
         # spectral_data = file_fits[0].data
         # line_header = file_fits[0].header
-        cube = SpectralCube.read(name)
-        cube_spectrum = cube.mean(axis=(1, 2))
         # moment_0_test = cube.moment(order=0)
         # moment_1_test = cube.moment(order=1)
         # moment_0_test.write(moment_0_filename)
@@ -244,4 +283,4 @@ class DataSpectral:
         # plt.xlabel("Velocity [km/s]", fontsize=15)
         # plt.ylabel("Intensity [K]", fontsize=15)
         # plt.savefig(spec_file)
-        return cube_spectrum
+        # return cube_spectrum
