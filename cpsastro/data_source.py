@@ -1,3 +1,5 @@
+from os import path
+from numpy.core.defchararray import array
 import requests
 import logging
 import urllib
@@ -203,22 +205,82 @@ class DataSource:
         return infos
 
 
-def get_cube(url: str):
-    urllib.request.urlopen(url)
-    r = requests.get(url)
-    open("test.fits", "wb").write(r.content)
+class DataCube:
+    def __init__(self, name: str) -> None:
+        if path.exists(name):
+            self.name = name
+        else:
+            try:
+                response = requests.get(name)
+                self.name = name
+            except requests.ConnectionError as exception:
+                logging.ERROR("Could not find the file or URL")
 
+        self._hdul = None
+        # self.data = None
+        # self.header = None
 
-def get_spectral(filename: str, vindex: int = "3"):
-    file_fits = fits.open(filename)
-    spectral_data = file_fits[0].data
-    line_header = file_fits[0].header
-    vaxis = f"CRVAL{vindex}"
-    pix_axis = f"CDELT{vindex}"
-    averaged_spectrum = np.nanmean(np.nanmean(spectral_data, 2), 1)
-    velocity_axis_end = (
-        line_header[vaxis] + len(averaged_spectrum) * line_header[pix_axis]
-    )
-    v_axes = np.linspace(line_header[vaxis], velocity_axis_end, len(averaged_spectrum))
+    @property
+    def data(self):
+        return self.hdul[0].data
 
-    return averaged_spectrum
+    @property
+    def header(self):
+        return self.hdul[0].header
+
+    @property
+    def hdul(self):
+        if self._hdul:
+            return self._hdul
+        else:
+            self.query()
+            return self._hdul
+
+    def query(self) -> object:
+        self._hdul = fits.open(self.name)
+        # self.data = hdul[0].data
+        # self.header = hdul[0].header
+        return
+
+    def save(self, filename: str) -> None:
+        if not path.exist(filename):
+            self.hdul.writeto(filename)
+        else:
+            print("Failed! File exists.")
+
+    @property
+    def spectrum(self):
+        spectrum = np.nanmean(self.data, axis=(1, 2))
+
+        # cube = SpectralCube(data=self.data, wcs=WCS(self.header))
+        # cube_spectrum = cube.mean(axis=(1, 2))
+        return spectrum
+
+        # name = self.filename
+        # cube = SpectralCube.read(self.name)
+        # cube_spectrum = cube.mean(axis=(1, 2))
+        # moment_0_filename = name + "_moment_0.fits"
+        # moment_1_filename = name + "_moment_1.fits"
+        # spec_file = self.filename + "_spectrum.jpg"
+        # file_fits = fits.open(name)
+        # spectral_data = file_fits[0].data
+        # line_header = file_fits[0].header
+        # moment_0_test = cube.moment(order=0)
+        # moment_1_test = cube.moment(order=1)
+        # moment_0_test.write(moment_0_filename)
+        # moment_1_test.write(moment_1_filename)
+        # vaxis = "CRVAL" + str(self.vindex)
+        # pix_axis = "CDELT" + str(self.vindex)
+        # velocity_axis_end = (
+        #     line_header[vaxis] + len(cube_spectrum) * line_header[pix_axis]
+        # ) / 1000
+        # v_axes = np.linspace(
+        #     line_header[vaxis] / 1000, velocity_axis_end, len(cube_spectrum)
+        # )
+        # plt.ioff()
+        # plt.figure()
+        # plt.step(v_axes, cube_spectrum)
+        # plt.xlabel("Velocity [km/s]", fontsize=15)
+        # plt.ylabel("Intensity [K]", fontsize=15)
+        # plt.savefig(spec_file)
+        # return cube_spectrum
