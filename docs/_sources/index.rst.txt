@@ -4,12 +4,15 @@
    contain the root `toctree` directive.
 
 Welcome to CPSASTRO's documentation!
-===============================
+=====================================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+   installation
+   usage
+   api_reference
 
 
 Indices and tables

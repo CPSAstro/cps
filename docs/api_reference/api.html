@@ -1,0 +1,378 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Api &#8212; CPSASTRO 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Api_reference" href="../api_reference.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-cpsastro.data_source">
+<span id="api"></span><h1>Api<a class="headerlink" href="#module-cpsastro.data_source" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="cpsastro.data_source.DataCube">
+<em class="property">class </em><code class="sig-prename descclassname">cpsastro.data_source.</code><code class="sig-name descname">DataCube</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#cpsastro.data_source.DataCube" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class handles cube data. It opens a local file or download a
+file from remote server by url.</p>
+<dl class="py attribute">
+<dt id="cpsastro.data_source.DataCube.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#cpsastro.data_source.DataCube.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>the filename or url</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cpsastro.data_source.DataCube.data">
+<em class="property">property </em><code class="sig-name descname">data</code><a class="headerlink" href="#cpsastro.data_source.DataCube.data" title="Permalink to this definition">¶</a></dt>
+<dd><p>the raw data of the target file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>raw data</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cpsastro.data_source.DataCube.hdul">
+<em class="property">property </em><code class="sig-name descname">hdul</code><a class="headerlink" href="#cpsastro.data_source.DataCube.hdul" title="Permalink to this definition">¶</a></dt>
+<dd><p>The HDUList of the file content</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>file content in HDUList</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>HDUList</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cpsastro.data_source.DataCube.header">
+<em class="property">property </em><code class="sig-name descname">header</code><a class="headerlink" href="#cpsastro.data_source.DataCube.header" title="Permalink to this definition">¶</a></dt>
+<dd><p>the header of the target file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>header</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>HDU header</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cpsastro.data_source.DataCube.query">
+<code class="sig-name descname">query</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; object<a class="headerlink" href="#cpsastro.data_source.DataCube.query" title="Permalink to this definition">¶</a></dt>
+<dd><p>open the file from local or remote database</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cpsastro.data_source.DataCube.save">
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#cpsastro.data_source.DataCube.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>save file to the assign filename</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) – the target filename</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cpsastro.data_source.DataCube.spectrum">
+<em class="property">property </em><code class="sig-name descname">spectrum</code><a class="headerlink" href="#cpsastro.data_source.DataCube.spectrum" title="Permalink to this definition">¶</a></dt>
+<dd><p>get the mean spectrum of the cube</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>line spectrum</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>array</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cpsastro.data_source.DataImage">
+<em class="property">class </em><code class="sig-prename descclassname">cpsastro.data_source.</code><code class="sig-name descname">DataImage</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">database</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">position</span><span class="p">:</span> <span class="n">astropy.coordinates.sky_coordinate.SkyCoord</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">survey</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#cpsastro.data_source.DataImage" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class handles the file in some archived databases and allow
+the analysis on those object. One file should be handle by one
+instance.</p>
+<dl class="py attribute">
+<dt id="cpsastro.data_source.DataImage.database">
+<code class="sig-name descname">database</code><a class="headerlink" href="#cpsastro.data_source.DataImage.database" title="Permalink to this definition">¶</a></dt>
+<dd><p>the target database</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="cpsastro.data_source.DataImage.position">
+<code class="sig-name descname">position</code><a class="headerlink" href="#cpsastro.data_source.DataImage.position" title="Permalink to this definition">¶</a></dt>
+<dd><p>the sky coordinate of the object or its alias</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="cpsastro.data_source.DataImage.survey">
+<code class="sig-name descname">survey</code><a class="headerlink" href="#cpsastro.data_source.DataImage.survey" title="Permalink to this definition">¶</a></dt>
+<dd><p>the target survey</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="cpsastro.data_source.DataImage.ImageMask">
+<em class="property">class </em><code class="sig-name descname">ImageMask</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">shape</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">position</span><span class="p">:</span> <span class="n">object</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rin</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rout</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mask</span><span class="p">:</span> <span class="n">object</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#cpsastro.data_source.DataImage.ImageMask" title="Permalink to this definition">¶</a></dt>
+<dd><p>The dataclass stores the information of mask.</p>
+<dl class="py attribute">
+<dt id="cpsastro.data_source.DataImage.ImageMask.mask">
+<code class="sig-name descname">mask</code><em class="property">: object</em><em class="property"> = None</em><a class="headerlink" href="#cpsastro.data_source.DataImage.ImageMask.mask" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="cpsastro.data_source.DataImage.ImageMask.position">
+<code class="sig-name descname">position</code><em class="property">: object</em><em class="property"> = None</em><a class="headerlink" href="#cpsastro.data_source.DataImage.ImageMask.position" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="cpsastro.data_source.DataImage.ImageMask.rin">
+<code class="sig-name descname">rin</code><em class="property">: float</em><em class="property"> = None</em><a class="headerlink" href="#cpsastro.data_source.DataImage.ImageMask.rin" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="cpsastro.data_source.DataImage.ImageMask.rout">
+<code class="sig-name descname">rout</code><em class="property">: float</em><em class="property"> = None</em><a class="headerlink" href="#cpsastro.data_source.DataImage.ImageMask.rout" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="cpsastro.data_source.DataImage.ImageMask.shape">
+<code class="sig-name descname">shape</code><em class="property">: str</em><em class="property"> = None</em><a class="headerlink" href="#cpsastro.data_source.DataImage.ImageMask.shape" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py method">
+<dt id="cpsastro.data_source.DataImage.background_flux">
+<code class="sig-name descname">background_flux</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#cpsastro.data_source.DataImage.background_flux" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the background flux if the mask is “annulus”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the background flux</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cpsastro.data_source.DataImage.center_flux">
+<code class="sig-name descname">center_flux</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#cpsastro.data_source.DataImage.center_flux" title="Permalink to this definition">¶</a></dt>
+<dd><p>calculate the flux in the center if the mask is “annulus” or “circle”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the flux in the center</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cpsastro.data_source.DataImage.data">
+<em class="property">property </em><code class="sig-name descname">data</code><a class="headerlink" href="#cpsastro.data_source.DataImage.data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the raw data of the image</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>raw data</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>HDU</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cpsastro.data_source.DataImage.header">
+<em class="property">property </em><code class="sig-name descname">header</code><a class="headerlink" href="#cpsastro.data_source.DataImage.header" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the header (WCS) of the image</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the header of the image</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>WCS</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cpsastro.data_source.DataImage.image">
+<em class="property">property </em><code class="sig-name descname">image</code><a class="headerlink" href="#cpsastro.data_source.DataImage.image" title="Permalink to this definition">¶</a></dt>
+<dd><p>The image requested from the database. Ideally should be a HDUList</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>image map content</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>HDUList</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cpsastro.data_source.DataImage.query">
+<code class="sig-name descname">query</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">position</span><span class="p">:</span> <span class="n">astropy.coordinates.sky_coordinate.SkyCoord</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">survey</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#cpsastro.data_source.DataImage.query" title="Permalink to this definition">¶</a></dt>
+<dd><p>request data from the database</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>position</strong> (<em>SkyCoord</em><em>, </em><em>optional</em>) – the sky coordinate of the object or alias, the value passed into the constructor will be try if no value is assigned here, defaults to None</p></li>
+<li><p><strong>survey</strong> (<em>str</em><em>, </em><em>optional</em>) – the target survey, the value passed into the constructor will be try if no value is assigned here, defaults to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – [description]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cpsastro.data_source.DataImage.set_mask">
+<code class="sig-name descname">set_mask</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">method</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'source'</span></em>, <em class="sig-param"><span class="n">inner</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">outer</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">position</span><span class="p">:</span> <span class="n">astropy.coordinates.sky_coordinate.SkyCoord</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">wcs</span><span class="p">:</span> <span class="n">astropy.wcs.wcs.WCS</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#cpsastro.data_source.DataImage.set_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a mask to the data image</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – the method to set mask, “source”, or “annulus”defaults to “source”</p></li>
+<li><p><strong>inner</strong> (<em>float</em><em>, </em><em>optional</em>) – the inner radius of the annulus, defaults to None</p></li>
+<li><p><strong>outer</strong> (<em>float</em><em>, </em><em>optional</em>) – the outer radius of the annulus, defaults to None</p></li>
+<li><p><strong>position</strong> (<em>SkyCoord</em><em>, </em><em>optional</em>) – the center of the annulus, defaults to None</p></li>
+<li><p><strong>wcs</strong> (<em>WCS</em><em>, </em><em>optional</em>) – the wcs used to convert mask to pixel, defaults to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – “annulus” must have position and inner/outer radius</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cpsastro.data_source.DataImage.surveylist">
+<em class="property">property </em><code class="sig-name descname">surveylist</code><a class="headerlink" href="#cpsastro.data_source.DataImage.surveylist" title="Permalink to this definition">¶</a></dt>
+<dd><p>The list of survey in the archived database</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the list of survey</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>string</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">CPSASTRO</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html">Api_reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Api</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../api_reference.html">Api_reference</a><ul>
+      <li>Previous: <a href="../api_reference.html" title="previous chapter">Api_reference</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Paul Chi-Yan Law.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/api_reference/api.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

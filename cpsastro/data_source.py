@@ -20,16 +20,30 @@ from astroquery.esasky import ESASky
 from astroquery.skyview import SkyView
 
 
-@dataclass
-class ImageMask:
-    shape: str = None
-    position: object = None
-    rin: float = None
-    rout: float = None
-    mask: object = None
-
-
 class DataImage:
+    """
+    This class handles the file in some archived databases and allow
+    the analysis on those object. One file should be handle by one
+    instance.
+
+    Attributes:
+        database: the target database
+        position: the sky coordinate of the object or its alias
+        survey: the target survey
+
+    """
+
+    @dataclass
+    class ImageMask:
+        """
+        The dataclass stores the information of mask.
+        """
+
+        shape: str = None
+        position: object = None
+        rin: float = None
+        rout: float = None
+        mask: object = None
 
     supported_archives = {
         "irsa": Irsa,
@@ -41,10 +55,14 @@ class DataImage:
         self, database: str, position: SkyCoord = None, survey: str = None
     ) -> None:
         """
-        Astronomical data source
+        Astronomical image map (2D)
 
-        Args:
-            database (object): one of database provide by astroquery
+        :param database: the source archives (allowed: skyview, irsa, esasky)
+        :type database: str
+        :param position: the sky coordinate of the object (or alias), defaults to None
+        :type position: SkyCoord, optional
+        :param survey: the target survey, defaults to None
+        :type survey: str, optional
         """
         self.database = self.supported_archives.get(database.lower())
         self.position = position
@@ -54,6 +72,12 @@ class DataImage:
 
     @property
     def image(self):
+        """
+        The image requested from the database. Ideally should be a HDUList
+
+        :return: image map content
+        :rtype: HDUList
+        """
         if self._image:
             return self._image
         else:
@@ -62,9 +86,24 @@ class DataImage:
 
     @property
     def surveylist(self):
+        """
+        The list of survey in the archived database
+
+        :return: the list of survey
+        :rtype: string
+        """
         return self.database.list_surveys()
 
     def query(self, position: SkyCoord = None, survey: str = None):
+        """
+        request data from the database
+
+        :param position: the sky coordinate of the object or alias, the value passed into the constructor will be try if no value is assigned here, defaults to None
+        :type position: SkyCoord, optional
+        :param survey: the target survey, the value passed into the constructor will be try if no value is assigned here, defaults to None
+        :type survey: str, optional
+        :raises ValueError: [description]
+        """
 
         if position and survey:
             logging.info("Update the position and survey")
@@ -82,29 +121,50 @@ class DataImage:
     @property
     def header(self):
         """
-        Get general information of images
+        Get the header (WCS) of the image
 
-        Returns:
-            header (str): the header of images
+        :return: the header of the image
+        :rtype: WCS
         """
         return WCS(self.image[0].header)
 
     @property
     def data(self):
+        """
+        Get the raw data of the image
+
+        :return: raw data
+        :rtype: HDU
+        """
         return self.image[0].data
 
     def set_mask(
         self,
         *args,
-        method: str = "source_mask",
+        method: str = "source",
         inner: float = None,
         outer: float = None,
         position: SkyCoord = None,
         wcs: WCS = None,
         **kwargs,
     ):
+        """
+        Set a mask to the data image
 
-        if method == "source_mask":
+        :param method: the method to set mask, "source", or "annulus"defaults to "source"
+        :type method: str, optional
+        :param inner: the inner radius of the annulus, defaults to None
+        :type inner: float, optional
+        :param outer: the outer radius of the annulus, defaults to None
+        :type outer: float, optional
+        :param position: the center of the annulus, defaults to None
+        :type position: SkyCoord, optional
+        :param wcs: the wcs used to convert mask to pixel, defaults to None
+        :type wcs: WCS, optional
+        :raises ValueError: "annulus" must have position and inner/outer radius
+        """
+
+        if method == "source":
             self._mask = make_source_mask(self.data, *args, **kwargs)
 
         elif method == "annulus":
@@ -133,6 +193,16 @@ class DataImage:
 
     @staticmethod
     def _calc_flux(data, *args, method: str = "rms", **kwargs):
+        """
+        calculate the flux of the input data
+
+        :param data: the input data
+        :type data: array
+        :param method: the method to calculate flux, "rms" or "median", defaults to "rms"
+        :type method: str, optional
+        :return: the flux of the input data
+        :rtype: [type]
+        """
 
         if method == "rms":
             return np.sqrt(np.average(data ** 2))
@@ -145,6 +215,12 @@ class DataImage:
             return NotImplemented
 
     def center_flux(self, *args, **kwargs):
+        """
+        calculate the flux in the center if the mask is "annulus" or "circle"
+
+        :return: the flux in the center
+        :rtype: float
+        """
 
         if self._mask.shape == "annulus":
 
@@ -170,6 +246,12 @@ class DataImage:
             return self._calc_flux(data, *args, **kwargs)
 
     def background_flux(self, *args, **kwargs):
+        """
+        return the background flux if the mask is "annulus"
+
+        :return: the background flux
+        :rtype: float
+        """
 
         if self._mask.shape != "annulus":
             raise ValueError("The mask is not an annulus")
@@ -227,7 +309,21 @@ class DataImage:
 
 
 class DataCube:
+    """
+    This class handles cube data. It opens a local file or download a
+    file from remote server by url.
+
+    Attributes:
+        name: the filename or url
+    """
+
     def __init__(self, name: str) -> None:
+        """
+        Astronomical data cube (3D)
+
+        :param name: the target filename or url
+        :type name: str
+        """
         if path.exists(name):
             self.name = name
         else:
@@ -243,14 +339,32 @@ class DataCube:
 
     @property
     def data(self):
+        """
+        the raw data of the target file
+
+        :return: raw data
+        :rtype: array
+        """
         return self.hdul[0].data
 
     @property
     def header(self):
+        """
+        the header of the target file
+
+        :return: header
+        :rtype: HDU header
+        """
         return self.hdul[0].header
 
     @property
     def hdul(self):
+        """
+        The HDUList of the file content
+
+        :return: file content in HDUList
+        :rtype: HDUList
+        """
         if self._hdul:
             return self._hdul
         else:
@@ -258,12 +372,20 @@ class DataCube:
             return self._hdul
 
     def query(self) -> object:
+        """
+        open the file from local or remote database
+        """
         self._hdul = fits.open(self.name)
         # self.data = hdul[0].data
         # self.header = hdul[0].header
-        return
 
     def save(self, filename: str) -> None:
+        """
+        save file to the assign filename
+
+        :param filename: the target filename
+        :type filename: str
+        """
         if not path.exist(filename):
             self.hdul.writeto(filename)
         else:
@@ -271,6 +393,12 @@ class DataCube:
 
     @property
     def spectrum(self):
+        """
+        get the mean spectrum of the cube
+
+        :return: line spectrum
+        :rtype: array
+        """
         spectrum = np.nanmean(self.data, axis=(1, 2))
 
         # cube = SpectralCube(data=self.data, wcs=WCS(self.header))
