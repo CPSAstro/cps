@@ -1,42 +1,43 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from astroquery.skyview import SkyView
 from astropy.coordinates import SkyCoord
 
-from cpsastro.data_source import DataSource, DataCube
+from cpsastro.data_source import DataImage, DataCube
 
 
-def test_init():
-    ds = DataSource(SkyView, list_survey=True)
+def test_dataimage_init():
+    ds = DataImage("skyview")
+    print(ds.surveylist)
 
 
-def test_query():
+def test_dataimage_query():
     position = "Eta Carinae"
     survey = ["Fermi 5", "HRI", "DSS"]
     # ds = DataSource(SkyView)
     # position = SkyCoord(ra, dec, unit='deg',frame='fk5')
     # survey = 'WISE 3.4'
-    ds = DataSource(SkyView, position=position, survey=survey)
-    ds.query()
+    dslist = [DataImage("skyview", position=position, survey=s) for s in survey]
+    for ds in dslist:
+        ds.query()
 
 
-def test_images_and_headers():
-    ds = DataSource(SkyView, position="Eta Carinae", survey="DSS")
-    ds.query()
-    print(ds.headers())
+def test_dataimage_data_and_header():
+    ds = DataImage("skyview", position="Eta Carinae", survey="DSS")
+    print(ds.header)
 
-    data = ds.images()
-    plt.imshow(data[0])
+    data = ds.data
+    plt.imshow(data)
     plt.savefig("test/Figures/TestImage.png")
 
 
-def test_masks_and_background():
+def test_dataimage_masks_and_flux():
 
     coord = SkyCoord(280.7156971, -4.0573715, unit="deg", frame="fk5")
-    ds = DataSource(SkyView, position=coord, survey="WISE 3.4")
-    ds.images()
-    ds.set_mask(inner=15, outer=15 * np.sqrt(2), pos=coord, method="annulus")
-    print(ds.flux_info())
+    ds = DataImage("skyview", position=coord, survey="WISE 3.4")
+    ds.set_mask(inner=15, outer=15 * np.sqrt(2), position=coord, method="annulus")
+    print(type(ds._mask))
+    print(ds.center_flux())
+    print(ds.background_flux())
 
 
 def test_datacube_spectrum():

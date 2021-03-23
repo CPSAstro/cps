@@ -1,11 +1,9 @@
-from os import path
-from numpy.core.defchararray import array
 import requests
 import logging
-import urllib
 import numpy as np
 import astropy.units as u
-from io import BytesIO
+from os import path
+from dataclasses import dataclass
 from astropy.io import fits
 from astropy.wcs import WCS
 from astropy.coordinates import SkyCoord
@@ -13,109 +11,125 @@ from astropy.stats import SigmaClip, sigma_clipped_stats
 from photutils import (
     SkyCircularAperture,
     SkyCircularAnnulus,
-    ApertureMask,
     aperture_photometry,
     make_source_mask,
 )
 
+from astroquery.irsa import Irsa
+from astroquery.esasky import ESASky
+from astroquery.skyview import SkyView
 
-class DataSource:
-    def __init__(self, database: object, *args, list_survey=False, **kwargs) -> None:
+
+@dataclass
+class ImageMask:
+    shape: str = None
+    position: object = None
+    rin: float = None
+    rout: float = None
+    mask: object = None
+
+
+class DataImage:
+
+    supported_archives = {
+        "irsa": Irsa,
+        "esasky": ESASky,
+        "skyview": SkyView,
+    }
+
+    def __init__(
+        self, database: str, position: SkyCoord = None, survey: str = None
+    ) -> None:
         """
         Astronomical data source
 
         Args:
             database (object): one of database provide by astroquery
         """
-        self.database = database
-        self.args = args
-        self.kwargs = kwargs
-        self.imgs = None
+        self.database = self.supported_archives.get(database.lower())
+        self.position = position
+        self.survey = survey
+        self._image = None
+        self._mask = None
 
-        # TODO: reduce the usage of aper or mask. The function is repeated right now
-        self.aper = None
-        self.mask = None
-        self.mask_member = None
+    @property
+    def image(self):
+        if self._image:
+            return self._image
+        else:
+            self.query()
+            return self._image
 
-        if list_survey:
-            database.list_surveys()
+    @property
+    def surveylist(self):
+        return self.database.list_surveys()
 
-    # TODO: Use generator?
-    def query(self, *args, **kwargs):
-        if args or kwargs:
-            self.args = args
-            self.kwargs = kwargs
-        self.imgs = list(self.database.get_images(*self.args, **self.kwargs))
+    def query(self, position: SkyCoord = None, survey: str = None):
 
-    def headers(self):
+        if position and survey:
+            logging.info("Update the position and survey")
+            self.position = position
+            self.survey = survey
+
+        if not self.position or not self.survey:
+            raise ValueError("Missing position or survey")
+
+        # Only get one image
+        self._image = self.database.get_images(
+            position=self.position, survey=self.survey
+        )[0]
+
+    @property
+    def header(self):
         """
         Get general information of images
 
         Returns:
             header (str): the header of images
         """
-        return [WCS(x[0].header) for x in self.imgs]
+        return WCS(self.image[0].header)
 
-    def images(self):
-        if not self.imgs:
-            self.query()
-        return [x[0].data for x in self.imgs]
+    @property
+    def data(self):
+        return self.image[0].data
 
     def set_mask(
         self,
+        *args,
+        method: str = "source_mask",
         inner: float = None,
         outer: float = None,
-        pos: SkyCoord = None,
+        position: SkyCoord = None,
         wcs: WCS = None,
-        source: str = "all",
-        method: str = "source_mask",
-        *args,
         **kwargs,
     ):
 
-        # TODO: rename the variable
-        self.mask_member = source
+        if method == "source_mask":
+            self._mask = make_source_mask(self.data, *args, **kwargs)
 
-        if source == "each":
-            data_list = self.images()
-
-            if method == "source_mask":
-                self.mask = [make_source_mask(data, args, kwargs) for data in data_list]
-
-            if method == "annulus":
-
-                raise NotImplementedError
-
-        elif source == "all":
-            if method == "source_mask":
-                logging.info(
-                    "Use the first image source to set source mask. Could not compatible with other sources"
+        elif method == "annulus":
+            if not position or not inner or not outer:
+                raise ValueError(
+                    "Use annulus mask but missing position or inner/outer radius"
                 )
 
-                data = self.images()[0]
-                self.mask = make_source_mask(data, args, kwargs)
-
-            elif method == "annulus":
-
-                if not (inner and outer and pos):
-                    # TODO: support saving coordinate when initializing
-                    raise TypeError
-
+            else:
                 if not wcs:
-                    logging.info(
-                        "Not assign the wcs, use the wcs from the header of the first image source"
-                    )
-                    wcs = self.headers()[0]
+                    logging.warning("Not assign the wcs, try the wcs from the header")
+                    wcs = self.header
 
-                # TODO: should allow input different parameters
-                self.aper = SkyCircularAnnulus(
-                    pos, inner * u.arcsec, outer * u.arcsec
-                ).to_pixel(wcs)
-                self.mask = self.aper.to_mask("center")
+                mask = (
+                    SkyCircularAnnulus(position, inner * u.arcsec, outer * u.arcsec)
+                    .to_pixel(wcs)
+                    .to_mask("center")
+                )
+                self._mask = ImageMask(
+                    shape="annulus", position=position, rin=inner, rout=outer, mask=mask
+                )
+                # self.mask = self.aper.to_mask("center")
 
         else:
-            # TODO: Update error type
-            raise NameError
+            raise ValueError(f"No supported method: {method}")
 
     @staticmethod
     def _calc_flux(data, *args, method: str = "rms", **kwargs):
@@ -124,85 +138,92 @@ class DataSource:
             return np.sqrt(np.average(data ** 2))
 
         elif method == "median":
-            _, median, _ = sigma_clipped_stats(data, args, kwargs)
+            _, median, _ = sigma_clipped_stats(data, *args, **kwargs)
             return median
 
         else:
-            raise NameError
+            return NotImplemented
 
-    @classmethod
-    def _center_flux(cls, image: object, mask: object, *args, **kwargs):
+    def center_flux(self, *args, **kwargs):
 
-        if isinstance(mask, SkyCircularAnnulus):
-            pos = mask.positions
-            inner = mask.r_in
+        if self._mask.shape == "annulus":
+
+            pos = self._mask.position
+            wcs = self.header
+            inner = self._mask.rin
             center_mask = (
-                SkyCircularAperture(inner * u.arcsec).to_pixel(pos).to_mask("center")
+                SkyCircularAperture(pos, inner * u.arcsec)
+                .to_pixel(wcs)
+                .to_mask("center")
             )
 
-            data = image[center_mask]
+            data = center_mask.multiply(self.data)
+            data = data[center_mask.data > 0]
 
-            return cls._calc_flux(data, args, kwargs)
+            return self._calc_flux(data, *args, **kwargs)
 
-        elif isinstance(mask, SkyCircularAperture):
+        elif self._mask.shape == "circle":
 
-            data = image[mask]
+            data = self._mask.mask.multiply(self.data)
+            data = data[self._mask.mask.data > 0]
 
-            return cls._calc_flux(data, args, kwargs)
+            return self._calc_flux(data, *args, **kwargs)
 
-    @classmethod
-    def _background_flux(cls, image: object, mask: object, *args, **kwargs):
+    def background_flux(self, *args, **kwargs):
 
-        annulus_data = mask.multiply(image)
-        data = annulus_data[mask.data > 0]
+        if self._mask.shape != "annulus":
+            raise ValueError("The mask is not an annulus")
 
-        return cls._calc_flux(data, args, kwargs)
+        data = self._mask.mask.multiply(self.data)
+        data = data[self._mask.mask.data > 0]
 
-    def backgrounds(self, *args, **kwargs):
+        return self._calc_flux(data, *args, **kwargs)
 
-        if not self.mask_member:
-            raise RuntimeError
+    # def backgrounds(self, *args, **kwargs):
 
-        elif self.mask_member == "all":
-            return [
-                self._background_flux(image, self.mask, args, kwargs)
-                for image in self.images()
-            ]
+    #     if not self.mask_member:
+    #         raise RuntimeError
 
-        elif self.mask_member == "each":
-            return [
-                self._background_flux(image, mask, args, kwargs)
-                for image, mask in zip(self.images, self.mask)
-            ]
+    #     elif self.mask_member == "all":
+    #         return [
+    #             self._background_flux(image, self.mask, args, kwargs)
+    #             for image in self.images()
+    #         ]
 
-        else:
-            raise RuntimeError
+    #     elif self.mask_member == "each":
+    #         return [
+    #             self._background_flux(image, mask, args, kwargs)
+    #             for image, mask in zip(self.images, self.mask)
+    #         ]
 
-    def flux_info(self, *args, **kwargs):
+    #     else:
+    #         raise RuntimeError
 
-        if self.aper == None:
+    # def flux_info(self, *args, **kwargs):
 
-            raise TypeError
+    #     if self.aper == None:
 
-        else:
+    #         raise TypeError
 
-            if self.mask_member == "each":
+    #     else:
 
-                raise NotImplementedError
+    #         if self.mask_member == "each":
 
-            elif self.mask_member == "all":
-                infos = [
-                    aperture_photometry(image, self.aper) for image in self.images()
-                ]
+    #             raise NotImplementedError
 
-            if not infos:
-                raise RuntimeError
+    #         elif self.mask_member == "all":
+    #             infos = [
+    #                 aperture_photometry(image, self.aper) for image in self.images()
+    #             ]
 
-            bkgs = self.backgrounds(args, kwargs)
-            for idx, info in enumerate(infos):
-                info["background_flux"] = bkgs[idx]
+    #         if not infos:
+    #             raise RuntimeError
 
-        return infos
+    #         bkgs = self.backgrounds(args, kwargs)
+    #         for idx, info in enumerate(infos):
+    #             info["background_flux"] = bkgs[idx]
+
+    #     return infos
 
 
 class DataCube:
