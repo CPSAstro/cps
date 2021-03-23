@@ -183,7 +183,7 @@ class DataImage:
                     .to_pixel(wcs)
                     .to_mask("center")
                 )
-                self._mask = ImageMask(
+                self._mask = self.ImageMask(
                     shape="annulus", position=position, rin=inner, rout=outer, mask=mask
                 )
                 # self.mask = self.aper.to_mask("center")
