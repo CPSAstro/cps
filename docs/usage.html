@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Usage &#8212; CPSASTRO 0.0.1 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Api_reference" href="api_reference.html" />
-    <link rel="prev" title="Installation" href="installation.html" />
+    <link rel="prev" title="Requirements" href="installation.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -35,6 +35,25 @@
             
   <div class="section" id="usage">
 <h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<p>For the continuum intensity measurement, we have implmented the Skyview, Herschel, and Spitzer astroquery services as these are the most widely used images for SED analyses.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">data_source</span><span class="o">.</span><span class="n">DataImage</span><span class="p">(</span><span class="n">SkyView</span><span class="p">,</span> <span class="s1">&#39;M31&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;WISE 3.4&#39;</span><span class="p">,</span> <span class="s1">&#39;WISE 4.6&#39;</span><span class="p">,</span> <span class="s1">&#39;WISE 12&#39;</span><span class="p">,</span> <span class="s1">&#39;WISE 22&#39;</span><span class="p">])</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">data</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;test/Figures/TestImage.png&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>When we measure the intensity, it is normal to have comtaimination from the background or neighboring sources, hence we apply photutils to help user definineing an annulus region from the aperture with manuual selected radius and the central coordiante of the aperture. Here we assume the aperture radius is 15 arcsec and the annulus has a radius such that the area of the annulus is the same as the aperture.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">coord</span> <span class="o">=</span> <span class="n">SkyCoord</span><span class="p">(</span><span class="mf">121.174329</span><span class="p">,</span> <span class="o">-</span><span class="mf">21.573309</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;deg&#39;</span><span class="p">,</span> <span class="n">frame</span><span class="o">=</span><span class="s1">&#39;galactic&#39;</span><span class="p">)</span>
+<span class="n">ds</span><span class="o">.</span><span class="n">set_mask</span><span class="p">(</span><span class="n">inner</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">outer</span><span class="o">=</span><span class="mi">15</span><span class="o">*</span><span class="mf">1.4</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">coord</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;annulus&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For the spectral cube anlyses, many of the these cubes are not in public archive, and normally require manual download. Hence, here we require the user to use the url link to the file and download to disk before performing the anlyses.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">url</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;http://jvo.nao.ac.jp/skynode/do/download/nobeyama/coming/coming_meta/CMG00000000&quot;</span><span class="p">)</span>
+<span class="n">dp</span> <span class="o">=</span> <span class="n">data_source</span><span class="o">.</span><span class="n">DataCube</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+<span class="n">dp</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">spectrum</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 
 
@@ -56,7 +75,8 @@
 <h3>Navigation</h3>
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#installation">Installation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api_reference.html">Api_reference</a></li>
 </ul>
@@ -65,7 +85,7 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="installation.html" title="previous chapter">Installation</a></li>
+      <li>Previous: <a href="installation.html" title="previous chapter">Requirements</a></li>
       <li>Next: <a href="api_reference.html" title="next chapter">Api_reference</a></li>
   </ul></li>
 </ul>
@@ -96,7 +116,7 @@
       &copy;2020, Paul Chi-Yan Law.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -400,6 +400,8 @@ class DataCube:
         :rtype: array
         """
         spectrum = np.nanmean(self.data, axis=(1, 2))
+        #integrated_intensity=np.nansum(self.data,axis=0)
+
 
         # cube = SpectralCube(data=self.data, wcs=WCS(self.header))
         # cube_spectrum = cube.mean(axis=(1, 2))
