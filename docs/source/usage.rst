@@ -1,6 +1,6 @@
 Usage
 ==================
-For the continuum intensity measurement, we have implmented the Skyviwe, Herschel, and Spitzer astroquery services as these are the most widely used images for SED analyses. 
+For the continuum intensity measurement, we have implmented the Skyview, Herschel, and Spitzer astroquery services as these are the most widely used images for SED analyses. 
 ::
 
 	ds = data_source.DataImage(SkyView, 'M31', ['WISE 3.4', 'WISE 4.6', 'WISE 12', 'WISE 22'])

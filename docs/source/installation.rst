@@ -4,6 +4,7 @@ Requirements
 The cpsAStro package requires the following packages:
 
 Python 3.8 or later
+
 `Numpy 1.16  <https://numpy.org/devdocs/release/1.16.0-notes.html>`_ or later
 
 `Astropy 2.0  <https://www.astropy.org/announcements/release-2.0.html>`_  or later
