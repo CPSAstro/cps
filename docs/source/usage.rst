@@ -8,7 +8,7 @@ For the continuum intensity measurement, we have implmented the Skyview, Hersche
 	plt.imshow(data)
 	plt.savefig("test/Figures/TestImage.png")
 
-When we measure the intensity, it is normal to have comtaimination from the background or neighboring sources, hence we apply photutils to help use definineing an annullus region from the aperture with manusual selected radius and the central coordiante of the source. 
+When we measure the intensity, it is normal to have comtaimination from the background or neighboring sources, hence we apply photutils to help user definineing an annulus region from the aperture with manuual selected radius and the central coordiante of the aperture. Here we assume the aperture radius is 15 arcsec and the annulus has a radius such that the area of the annulus is the same as the aperture. 
 ::
 
 	coord = SkyCoord(121.174329, -21.573309, unit='deg', frame='galactic')
