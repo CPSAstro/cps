@@ -45,4 +45,3 @@ def test_datacube_spectrum():
     dp = DataCube(url)
     dp.query()
     print(dp.spectrum)
-    

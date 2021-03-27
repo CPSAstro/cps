@@ -4,14 +4,20 @@
    contain the root `toctree` directive.
 
 Welcome to CPSASTRO's documentation!
+
+Code : Github repository
+Docs : Region documentation
+Contributors : https://github.com/astropy/regions/graphs/contributors
+Releases: https://pypi.org/project/regions
 =====================================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   installation
-   usage
+   Quick_start
+   Installation
+   Usage
    api_reference
 
 
