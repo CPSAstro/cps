@@ -23,5 +23,5 @@ $ poetry run pytest -s test/
 ```
 
 ## Usage
-Currently, you have to assign the interested `DataSet` and `Survey` supported by <span style="color:red">*`astroquery`*</span> when you using the package.
+See 'Usage' section in dicumentation:  https://cpsastro.github.io/cps/usage.html
 
