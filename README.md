@@ -23,5 +23,5 @@ $ poetry run pytest -s test/
 ```
 
 ## Usage
-See 'Usage' section in dicumentation:  https://cpsastro.github.io/cps/usage.html
+See 'Usage' section in documentation:  https://cpsastro.github.io/cps/usage.html
 
