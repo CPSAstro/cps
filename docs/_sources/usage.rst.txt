@@ -17,7 +17,7 @@ When we measure the intensity, it is normal to have comtaimination from the back
 ::
 
 	coord = SkyCoord(359.901, -17.853, unit='deg', frame='galactic') 
-	ds.set_mask(inner=15, outer=15*1.4, pos=coord, method='annulus')
+	ds.set_mask(inner=15, outer=15*1.4, position=coord, method='annulus')
 
 
 For the spectral cube anlyses, many of the these cubes are not in public archive, and normally require manual download. Hence, here we require the user to use the url link to the file and download to disk before performing the anlyses. 
